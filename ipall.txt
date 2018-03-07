@@ -1,0 +1,2 @@
+ComputerName=EMAIL-PC LocalIp=192.168.1.125 MyExternalIP=128.128.128.130 Start time: 09:01:22 dimanche Time now: 10:02:36 dimanche Elapsed time: 0 days 1:1:14
+
