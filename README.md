@@ -9,3 +9,13 @@ Changes lines:
 
 	SetEnv, email, ANEMAILHERE@hotmail.com
 	SetEnv, pass, THEPASSWORDHERE
+
+
+BASED ON SENDMAIL BY :
+
+sendEmail - Send email from a console near you!
+Written by: Brandon Zehm <caspian@dotconf.net>
+http://caspian.dotconf.net/
+http://www.tsheets.com/
+
+sendEmail-1.55 by Brandon Zehm <caspian@dotconf.net>
