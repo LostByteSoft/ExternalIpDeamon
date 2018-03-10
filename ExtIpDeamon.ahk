@@ -7,13 +7,6 @@
 ;;	This entire thing (work) is a developpement tool for AHK scripting.
 ;;	Use an external EXE or DLL file for icon is shit load of job and the final quality is less.
 
-;;--- Set email and password here ---
-
-	;; Email and password is not crypted so be carefull.
-
-	SetEnv, email, ANEMAILHERE@hotmail.com
-	SetEnv, pass, THEPASSWORDHERE
-
 ;;--- Softwares Variables ---
 
 	SetWorkingDir, %A_ScriptDir%
@@ -26,7 +19,7 @@
 
 	SetEnv, title, External Ip Deamon
 	SetEnv, mode, Get external IP. Deamon for servers.
-	SetEnv, version, Version 2018-03-07-1342
+	SetEnv, version, Version 2018-03-09-1948
 	SetEnv, Author, LostByteSoft
 	SetEnv, icofolder, C:\Program Files\Common Files\
 	SetEnv, logoicon, ico_loupe.ico
@@ -40,6 +33,7 @@
 	FileInstall, ico_loupe_w.ico, %icofolder%\ico_loupe_w.ico, 0
 	FileInstall, empty.txt, %icofolder%\ip.txt, 0
 	FileInstall, empty.txt, %icofolder%\ipall.txt, 0
+	FileInstall, img_warning.jpg, %icofolder%\img_warning.jpg, 0
 
 	;; Common ico
 
@@ -53,6 +47,18 @@
 	FileInstall, ico_pause.ico, %icofolder%\ico_pause.ico, 0
 
 	IfNotExist, sendEmail.dll, goto, error
+
+;;--- Set email and password here ---
+
+	;; Email and password is not crypted so be carefull.
+
+	;; Hard to find email and password. (Is somewhere in computer)
+
+	InputBox, email , %Title%, Your email here :, , , , , , , , @hotmail.com
+	InputBox, pass , %Title%, Your password email here :
+
+	;; SetEnv, email, ANEMAILHERE@hotmail.com
+	;; SetEnv, pass, THEPASSWORDHERE
 
 ;;--- Menu Tray options ---
 
@@ -153,6 +159,13 @@ checker:
 	Goto, Email
 
 email:
+	Gui, 3:Add, Picture, x0 y0 w1000 h542 , %icofolder%\img_warning.jpg
+	Gui, 3:Font, S20 Cwhite Bold, Verdana
+
+	Gui, 3:Add, Text, BackgroundTrans x250 y150 w540 h40 , Your external IP has changed !
+
+
+	Gui, 3:Show, w1000 h542, %title% %mode%
 	t_TimeFormat := "HH:mm:ss dddd"
 	t_StartTime :=                          		; Clear variable = A_Now
 	t_UpTime := A_TickCount // 1000				; Elapsed seconds since start
@@ -197,6 +210,9 @@ send24h:
 	FormatTime t_NowTime, , %t_TimeFormat%  		; Empty time = A_Now
 	FormatTime t_StartTime, %t_StartTime%, %t_TimeFormat%
 	t_UpTime := % t_UpTime // 86400 " days " mod(t_UpTime // 3600, 24) ":" mod(t_UpTime // 60, 60) ":" mod(t_UpTime, 60)
+
+	Msgbox, 64, %title% (Time out 30 sec), External IP Address checker debug=%debug% Send an email to all 24 hours. This message will appear all 24 hours. It have a timeout of 30 seconds.`n`nComputerName=%A_ComputerName%`n`nLocalIp=%A_IPAddress1%`n`nMyExternalIP=%ExternalIP%`n`nStart time: `t" %t_StartTime% "`nTime now:`t" %t_NowTime% "`n`nElapsed time:`t" %t_UpTime% "`n`n`t(External IP in clipboard), 30
+
 	clipboard = ComputerName=%A_ComputerName% LocalIp=%A_IPAddress1% MyExternalIP=%ExternalIP% Start time: %t_StartTime% Time now: %t_NowTime% Elapsed time: %t_UpTime%
 	SetEnv, data, ComputerName=%A_ComputerName% LocalIp=%A_IPAddress1% MyExternalIP=%ExternalIP% Start time: %t_StartTime% Time now: %t_NowTime% Elapsed time: %t_UpTime%
 	FileAppend, %data%`n`n, C:\Program Files\ipall.txt
@@ -270,7 +286,7 @@ pause:
 	goto, sleep2
 
 error:
-	MsgBox, 17, %title%, File sendEmail.dll was not found in same directory of ExtIpDeamon.exe
+	MsgBox, 17, %title%, File sendEmail.dll was not found in same directory of ExtIpDeamon.exe (Now exit)
 	Goto, exitapp
 
 ;;--- Quit (escape , esc) ---
@@ -290,7 +306,7 @@ ExitApp:
 secret:
 	FileReadLine, ExternalIP, ip.txt, 1
 	SetEnv, ExternalIPnew, %ExternalIP%
-	MsgBox, 64, %title%, All variables is shown here.`n`nTitle=%title% mode=%mode% version=%version% author=%author% Debug=%debug%.`n`nExternalIPold=%ExternalIPold% ExternalIPnew=%ExternalIPnew%`n`nClipboard (if text)=%clipboard%
+	MsgBox, 64, %title%, SECRET MsgBox All variables is shown here.`n`ntitle=%title% mode=%mode% version=%version% author=%author% LogoIcon=%logoicon% Debug=%debug%`n`nA_WorkingDir=%A_WorkingDir%`nIcoFolder=%icofolder%`n`nExternalIPold=%ExternalIPold% ExternalIPnew=%ExternalIPnew%`n`nClipboard (if text)=%clipboard%
 	Return
 
 about:
@@ -313,6 +329,10 @@ GuiLogo:
 	;;Gui, 4:Color, 000000
 	Sleep, 500
 	Return
+
+	3GuiClose:
+	Gui 3:Cancel
+	return
 
 	4GuiClose:
 	Gui 4:Cancel
