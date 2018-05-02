@@ -1,10 +1,10 @@
 ;;--- Head --- Informations --- AHK ---
 
-;;	Compatibility: Windows Xp , Windows Vista , Windows 7 , Windows 8
+;;	Require 64 bit operationg system (you could make an 32 bit compatible)
+;;	Compatibility: Windows Xp , Windows Vista , Windows 7 , Windows 8 , Winodows 10
 ;;	All files must be in same folder. Where you want.
 ;;	64 bit AHK version : 1.1.24.2 64 bit Unicode
 ;;	Use as a developpement tool for AHK
-;;	This entire thing (work) is a developpement tool for AHK scripting.
 ;;	Use an external EXE or DLL file for icon is shit load of job and the final quality is less.
 
 ;;--- Softwares Variables ---
@@ -20,10 +20,11 @@
 
 	SetEnv, title, External Ip Deamon
 	SetEnv, mode, Get external IP. Deamon for servers.
-	SetEnv, version, Version 2018-03-24-1012
+	SetEnv, version, Version 2018-04-18-0818
 	SetEnv, Author, LostByteSoft
 	SetEnv, icofolder, C:\Program Files\Common Files\
 	SetEnv, logoicon, ico_loupe.ico
+	SetEnv, ExternalIPold, 0.0.0.0
 
 	SetEnv, debug, 0
 	SetEnv, sendall24h, 0
@@ -35,16 +36,16 @@
 	FileInstall, ico_clipboard.ico, %icofolder%\ico_clipboard.ico, 0
 
 	;; Common ico
-	FileInstall, ico_about.ico, %icofolder%\ico_about.ico, 0
-	FileInstall, ico_lock.ico, %icofolder%\ico_lock.ico, 0
-	FileInstall, ico_options.ico, %icofolder%\ico_options.ico, 0
-	FileInstall, ico_reboot.ico, %icofolder%\ico_reboot.ico, 0
-	FileInstall, ico_shut.ico, %icofolder%\ico_shut.ico, 0
-	FileInstall, ico_debug.ico, %icofolder%\ico_debug.ico, 0
-	FileInstall, ico_HotKeys.ico, %icofolder%\ico_HotKeys.ico, 0
-	FileInstall, ico_pause.ico, %icofolder%\ico_pause.ico, 0
-	FileInstall, ico_loupe.ico, %icofolder%\ico_loupe.ico, 0
-	FileInstall, ico_folder.ico, %icofolder%\ico_folder.ico, 0
+	FileInstall, SharedIcons\ico_about.ico, %icofolder%\ico_about.ico, 0
+	FileInstall, SharedIcons\ico_lock.ico, %icofolder%\ico_lock.ico, 0
+	FileInstall, SharedIcons\ico_options.ico, %icofolder%\ico_options.ico, 0
+	FileInstall, SharedIcons\ico_reboot.ico, %icofolder%\ico_reboot.ico, 0
+	FileInstall, SharedIcons\ico_shut.ico, %icofolder%\ico_shut.ico, 0
+	FileInstall, SharedIcons\ico_debug.ico, %icofolder%\ico_debug.ico, 0
+	FileInstall, SharedIcons\ico_HotKeys.ico, %icofolder%\ico_HotKeys.ico, 0
+	FileInstall, SharedIcons\ico_pause.ico, %icofolder%\ico_pause.ico, 0
+	FileInstall, SharedIcons\ico_loupe.ico, %icofolder%\ico_loupe.ico, 0
+	FileInstall, SharedIcons\ico_folder.ico, %icofolder%\ico_folder.ico, 0
 
 	IfNotExist, sendEmail.dll, goto, error
 
@@ -54,13 +55,13 @@
 
 	;; Hard to find with inputbox email and password. (Is somewhere in computer ram)
 
-	InputBox, email , %Title%, Your email here :, , , , , , , , @hotmail.com
-	InputBox, pass , %Title%, Your password email here :
+	;;InputBox, email , %Title%, Your email here :, , , , , , , , @hotmail.com
+	;;InputBox, pass , %Title%, Your password email here :
 
 	;; Easy mail and pass but not encrypted.
 
-	;; SetEnv, email, jeanvaljean@hotmail.com
-	;; SetEnv, pass, ilikepotatoes
+	SetEnv, email, tyhfhgfhgfhgfhgf@hotmail.com
+	SetEnv, pass, ghjhgjhgjjgh
 
 ;;--- Menu Tray options ---
 
@@ -102,8 +103,14 @@
 	menu, tray, add,
 	menu, tray, add, Send email all 24 hours (toggle), select24h
 	menu, tray, add,
-	menu, tray, add, Show "ip.txt", openip
-	menu, tray, add, Show "ipall.txt", openipall
+	menu, tray, add, Show "ip.txt", openiptxt
+	menu, tray, add, Show "ipall.txt", openipalltxt
+	menu, tray, add,
+	menu, tray, add, Open 127.0.0.1 (home), openhome
+	menu, tray, add, Open 192.168.1.1 (root), openroot
+	menu, tray, add, Open %A_IPAddress1% (local), openlocal
+	menu, tray, add, Open External IP (external), openip
+	menu, tray, add,
 	menu, tray, add, Send test email now !, emailtest
 	menu, tray, add, Copy all info in clipboard, allinfo
 	Menu, Tray, Icon, Copy all info in clipboard, %icofolder%\ico_clipboard.ico
@@ -268,6 +275,36 @@ error:
 	MsgBox, 17, %title%, (Error:) File sendEmail.dll was not found in same directory of ExtIpDeamon.exe (Will exit)
 	Goto, exitapp
 
+;;--- tray bar options ---
+
+openiptxt:
+	run, notepad.exe "%A_ScriptDir%\ip.txt"
+	return
+
+openipalltxt:
+	run, notepad.exe "%A_ScriptDir%\ipall.txt"
+	return
+
+ipclip:
+	clipboard=%ExternalIP%
+	Return
+
+openhome:
+	run, http://127.0.0.1
+	Return
+
+openip:
+	run, http://%ExternalIP%
+	Return
+
+openroot:
+	run, http://192.168.1.1
+	Return
+
+openlocal:
+	run, http://%A_IPAddress1%
+	Return
+
 ;;--- Quit ---
 
 ;; Escape::
@@ -363,18 +400,6 @@ GuiLogo:
 A_WorkingDir:
 	IfEqual, debug, 1, msgbox, (A_WorkingDir:) run explorer.exe "%A_WorkingDir%"
 	run, explorer.exe "%A_WorkingDir%"
-	Return
-
-openip:
-	run, notepad.exe "%A_ScriptDir%\ip.txt"
-	return
-
-openipall:
-	run, notepad.exe "%A_ScriptDir%\ipall.txt"
-	return
-
-ipclip:
-	clipboard=%ExternalIP%
 	Return
 
 webpage:
